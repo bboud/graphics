@@ -19,7 +19,7 @@ public class Shader {
 	}
 	
 	private static void ProgramErrorCheck(int program) throws Exception {
-		int success = glGetProgrami(program, GL_COMPILE_STATUS);
+		int success = glGetProgrami(program, GL_LINK_STATUS);
 		if(success == 0){
 			System.out.println("Program error check failed.");
 			String infoLog = glGetProgramInfoLog(program);
@@ -39,12 +39,17 @@ public class Shader {
 			scan.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			System.exit(-1);
 		}
 		return data;
 	}
 	
 	public void Use() {
 		glUseProgram(this.program);
+	}
+	
+	public int GetProgramID() {
+		return this.program;
 	}
 	
 	//The value needs to be passed as either 1 or 0.
