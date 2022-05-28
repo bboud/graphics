@@ -1,14 +1,11 @@
 package graphics;
 
 import static org.lwjgl.opengl.GL33.*;
-
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
+import static org.lwjgl.system.MemoryUtil.*;
 
 public class Triangle extends Drawable{
 
-	private final float verticies[] = {
+	private static final float vertexData[] = {
 		    // positions
 		     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
 		    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -24,11 +21,6 @@ public class Triangle extends Drawable{
 		this.VAO = glGenVertexArrays();
 		glBindVertexArray(this.VAO);
 		
-		
-		FloatBuffer vertexData = BufferUtils.createFloatBuffer(18);
-		vertexData.put(verticies);
-		vertexData.flip();
-		
 		//Bind the vertex buffer object to the vertex array
 		this.VBO = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, this.VBO);
@@ -37,14 +29,10 @@ public class Triangle extends Drawable{
 		int aPos = glGetAttribLocation(this.shader.GetProgramID(), "aPos");
 		int aColor = glGetAttribLocation(this.shader.GetProgramID(), "aColor");
 		
-		System.out.println(this.shader.GetProgramID());
-		System.out.println(aPos);
-		System.out.println(aColor);
-		
-		glVertexAttribPointer(aPos, 3, GL_FLOAT, false, 6*Float.SIZE, 0);
+		glVertexAttribPointer(aPos, 3, GL_FLOAT, false, 6*Float.BYTES, NULL);
 		glEnableVertexAttribArray(aPos);
 		
-		glVertexAttribPointer(aColor, 3, GL_FLOAT, false, 6*Float.SIZE, 3*Float.SIZE);
+		glVertexAttribPointer(aColor, 3, GL_FLOAT, false, 6*Float.BYTES, 3*Float.BYTES);
 		glEnableVertexAttribArray(aColor);
 	}
 	
@@ -60,7 +48,7 @@ public class Triangle extends Drawable{
 	public void Render() {
 		this.shader.Use();
 		glBindVertexArray(this.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 3);	
 	}
 
 }
