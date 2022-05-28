@@ -1,8 +1,10 @@
 package graphics;
 
+import static org.lwjgl.opengl.GL33.*;
+
 public abstract class Drawable {
-	protected int VBO;
-	protected int VAO;
+	protected final int VBO = glGenBuffers();
+	protected final int VAO = glGenVertexArrays();
 	protected Shader shader;
 	
 	public abstract void Render();

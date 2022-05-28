@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Shader {
 	
-	private int program;
+	private final int program = glCreateProgram();
 	
 	private static void ShaderErrorCheck(int shader) throws Exception {
 		int success = glGetShaderi(shader, GL_COMPILE_STATUS);
@@ -45,46 +45,42 @@ public class Shader {
 	}
 	
 	public void Use() {
-		glUseProgram(this.program);
+		glUseProgram(program);
 	}
 	
 	public int GetProgramID() {
-		return this.program;
+		return program;
 	}
 	
 	//The value needs to be passed as either 1 or 0.
 	public void SetBool(String name, int value) {
-		glUniform1i(glGetUniformLocation(this.program, name), value);
+		glUniform1i(glGetUniformLocation(program, name), value);
 	}
 	
 	public void SetInt(String name, int value) {
-		glUniform1i(glGetUniformLocation(this.program, name), value);
+		glUniform1i(glGetUniformLocation(program, name), value);
 	}
 	
 	public void SetFloat(String name, int value) {
-		glUniform1f(glGetUniformLocation(this.program, name), value);
+		glUniform1f(glGetUniformLocation(program, name), value);
 	}
 	
 	public Shader(String vertexPath, String fragmentPath) {
 		try {
 			int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 			glShaderSource(vertexShader, ReadSource(vertexPath));
-			System.out.println("Compiling vertex shader...");
 			glCompileShader(vertexShader);
 	
 			ShaderErrorCheck(vertexShader);
 			
 			int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 			glShaderSource(fragmentShader, ReadSource(fragmentPath));
-			System.out.println("Compiling fragment shader...");
 			glCompileShader(fragmentShader);
 	
 			ShaderErrorCheck(fragmentShader);
 			
-			program = glCreateProgram();
 			glAttachShader(program, vertexShader);
 			glAttachShader(program, fragmentShader);
-			System.out.println("Linking shaders...");
 			glLinkProgram(program);
 			
 			ProgramErrorCheck(program);
