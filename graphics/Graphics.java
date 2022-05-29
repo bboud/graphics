@@ -100,7 +100,8 @@ public class Graphics {
 		// bindings available for use.
 		GL.createCapabilities();
 		
-		Triangle t = new Triangle();		
+		//Triangle t = new Triangle();		
+		Square s = new Square();
 		
 		// Set the clear color
 		glClearColor(0.2f, 0.3f, 0.2f, 0.0f);
@@ -110,7 +111,7 @@ public class Graphics {
 		while ( !glfwWindowShouldClose(window) ) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			t.Render();
+			s.Render();
 			
 			glfwSwapBuffers(window); // swap the color buffers
 

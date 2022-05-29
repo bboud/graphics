@@ -2,11 +2,16 @@ package graphics;
 
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.stb.STBImage.*;
+
+import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
+import org.lwjgl.system.MemoryStack;
 
 public class Triangle extends Drawable{
 
 	private static final float vertexData[] = {
-		    // positions
+		    // positions		Colors
 		     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
 		    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
 		     0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
