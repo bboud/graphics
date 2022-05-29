@@ -3,7 +3,11 @@ package graphics;
 import static org.lwjgl.opengl.GL33.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.FloatBuffer;
 import java.util.Scanner;
+
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
 
 public class Shader {
 	
@@ -63,6 +67,15 @@ public class Shader {
 	
 	public void SetFloat(String name, int value) {
 		glUniform1f(glGetUniformLocation(program, name), value);
+	}
+	
+	public void SetMat4(String name, Matrix4f mat) {
+		final int id = glGetUniformLocation(program, name);
+		
+		try (MemoryStack stack = MemoryStack.stackPush()){
+			FloatBuffer data = stack.mallocFloat(4*Float.BYTES);
+			glUniformMatrix4fv(id, false, mat.get(data));
+		}
 	}
 	
 	public Shader(String vertexPath, String fragmentPath) {

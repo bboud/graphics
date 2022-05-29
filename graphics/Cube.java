@@ -10,32 +10,62 @@ import java.nio.FloatBuffer;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.GeometryUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryStack;
 
-public class Square extends Drawable {
+public class Cube extends Drawable {
 
 	private final int texture1 = glGenTextures();
 	private final int texture2 = glGenTextures();
 
 	private static final float vertexData[] = {
-			// positions	    // texture coords
-			0.5f, 0.5f, 0.0f,   1.0f, 1.0f, // top right
-			0.5f, -0.5f, 0.0f, 	1.0f, 0.0f, // bottom right
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-			-0.5f, 0.5f, 0.0f, 	0.0f, 1.0f // top left
-	};
-	
-	private static final int indicies[] = {
-			0, 1, 3,
-			1, 2, 3
-	};
+		    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+		};
 
 	private void SetUpShaders() {
 		try {
-			String vert = getClass().getClassLoader().getResource("resources/shaders/square.vert").getPath();
-			String frag = getClass().getClassLoader().getResource("resources/shaders/square.frag").getPath();
+			String vert = getClass().getClassLoader().getResource("resources/shaders/cube.vert").getPath();
+			String frag = getClass().getClassLoader().getResource("resources/shaders/cube.frag").getPath();
 
 			shader = new Shader(vert, frag);
 		} catch (NullPointerException e) {
@@ -109,16 +139,15 @@ public class Square extends Drawable {
 		}
 	}
 
-	public Square() {
+	public Cube() {
+		
+		glDeleteBuffers(EBO);
 		
 		glBindVertexArray(VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
-		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STATIC_DRAW);
-		
+
 		SetUpShaders();
 		
 		SetUpTextures();
@@ -131,7 +160,6 @@ public class Square extends Drawable {
 	public void Delete() {
 		glDeleteVertexArrays(VAO);
 		glDeleteBuffers(VBO);
-		glDeleteBuffers(EBO);
 		shader.Delete();
 		
 	}
@@ -146,10 +174,9 @@ public class Square extends Drawable {
 	
 	//Do some actions!
 	public void Actor() {
-		
 		//World
 		Matrix4f model = new Matrix4f();
-		model.rotate(-45.0f, new Vector3f(1.0f, 0.0f, 0.0f));
+		model.rotate((float)GLFW.glfwGetTime(), new Vector3f(1.0f, 1.0f, 1.0f).normalize());
 		
 		//View
 		Matrix4f view = new Matrix4f();
@@ -159,22 +186,9 @@ public class Square extends Drawable {
 		Matrix4f projection = new Matrix4f();
 		projection.perspective(45.0f, 800.0f/600.0f, 0.1f, 100.0f);
 		
-		final int modelLocation = glGetUniformLocation(shader.GetProgramID(), "model");
-		final int viewLocation = glGetUniformLocation(shader.GetProgramID(), "view");
-		final int projectionLocation = glGetUniformLocation(shader.GetProgramID(), "projection");
-		
-		try(MemoryStack stack = MemoryStack.stackPush()){
-			FloatBuffer modelData = stack.mallocFloat(4*Float.BYTES);
-			FloatBuffer viewData = stack.mallocFloat(4*Float.BYTES);
-			FloatBuffer projectionData = stack.mallocFloat(4*Float.BYTES);
-			model.get(modelData);
-			view.get(viewData);
-			projection.get(projectionData);
-
-			glUniformMatrix4fv(modelLocation, false, modelData);
-			glUniformMatrix4fv(viewLocation, false, viewData);
-			glUniformMatrix4fv(projectionLocation, false, projectionData);
-		}
+		shader.SetMat4("model", model);
+		shader.SetMat4("view", view);
+		shader.SetMat4("projection", projection);
 	}
 
 	@Override
@@ -186,7 +200,7 @@ public class Square extends Drawable {
 		
 		shader.Use();
 		
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(VAO);		
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 }
