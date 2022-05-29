@@ -112,6 +112,7 @@ public class Graphics {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
 			s.Render();
+			s.Actor();
 			
 			glfwSwapBuffers(window); // swap the color buffers
 
@@ -119,6 +120,8 @@ public class Graphics {
 			// invoked during this call.
 			glfwPollEvents();
 		}
+		
+		s.Delete();
 	}
 
 	public static void main(String[] args) {

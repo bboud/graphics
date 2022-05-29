@@ -92,4 +92,8 @@ public class Shader {
 			System.exit(-1);
 		}
 	}
+	
+	public void Delete() {
+		glDeleteProgram(program);
+	}
 }

@@ -6,11 +6,17 @@ import static org.lwjgl.stb.STBImage.*;
 
 import java.nio.IntBuffer;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryStack;
 
 public class Square extends Drawable {
 
-	private final int texture = glGenTextures();
+	private final int texture1 = glGenTextures();
+	private final int texture2 = glGenTextures();
 
 	private static final float vertexData[] = {
 			// positions 		// colors 		  // texture coords
@@ -55,23 +61,44 @@ public class Square extends Drawable {
 		glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, false, 8 * Float.BYTES, 6 * Float.BYTES);
 		glEnableVertexAttribArray(aTexCoord);
 
-		String text = getClass().getClassLoader().getResource("resources/images/wall.jpg").getPath();
-
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, texture1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		
+		LoadTexture("resources/images/container.jpg", GL_RGB);
+		
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		
+		LoadTexture("resources/images/awesomeface.png", GL_RGBA);
+		
+		shader.Use();
+		
+		shader.SetInt("texture1", 0);
+		shader.SetInt("texture2", 1);
 
+	}
+	
+	private void LoadTexture(String path, int type) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
+			
+			String text = getClass().getClassLoader().getResource(path).getPath();
+			
 			IntBuffer width = stack.ints(0);
 			IntBuffer height = stack.ints(0);
 			IntBuffer channels = stack.ints(0);
+			
+			stbi_set_flip_vertically_on_load(true);
 
 			ByteBuffer data = stbi_load(text, width, height, channels, 0);
-
+			
 			if (data != null) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width.get(0), height.get(0), 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width.get(0), height.get(0), 0, type, GL_UNSIGNED_BYTE, data);
 				glGenerateMipmap(GL_TEXTURE_2D);
 			} else {
 				System.err.println("Could not load texture!");
@@ -99,7 +126,16 @@ public class Square extends Drawable {
 		SetUpTextures();
 		
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
+	}
+	
+	public void Delete() {
+		glDeleteVertexArrays(VAO);
+		glDeleteBuffers(VBO);
+		glDeleteBuffers(EBO);
+		shader.Delete();
+		
 	}
 
 	public void SetShader(Shader shader) {
@@ -109,12 +145,36 @@ public class Square extends Drawable {
 	public int GetVAO() {
 		return VAO;
 	}
+	
+	//Do some actions!
+	public void Actor() {
+		// Create Transformations
+		Matrix4f transform = new Matrix4f(); // Identity matrix
+		// JOML needs the rotation vector to be normalized
+		transform.rotate((float)GLFW.glfwGetTime(), new Vector3f(0.0f, 0.0f, 1.0f).normalize());
+		
+		// Get matrix's uniform location and set matrix
+		shader.Use();
+		final int transformLocation = glGetUniformLocation(shader.GetProgramID(), "transform");
+		
+		try(MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer transformData = stack.mallocFloat(16);
+			// Since LWJGL needs the data in array/Buffer form, we have to
+			// fill a Buffer with the matrix data
+			transform.get(transformData);
+			glUniformMatrix4fv(transformLocation, false, transformData);
+		}
+	}
 
 	@Override
 	public void Render() {
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		
 		shader.Use();
-		shader.SetInt("ourTexture", 0);
+		
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
