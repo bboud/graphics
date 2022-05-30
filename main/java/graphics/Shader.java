@@ -1,4 +1,4 @@
-package graphics;
+package main.java.graphics;
 
 import static org.lwjgl.opengl.GL33.*;
 import java.io.File;

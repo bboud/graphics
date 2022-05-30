@@ -1,12 +1,7 @@
-package graphics;
+package main.java.graphics;
 
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryUtil.*;
-import static org.lwjgl.stb.STBImage.*;
-
-import java.nio.IntBuffer;
-import java.nio.ByteBuffer;
-import org.lwjgl.system.MemoryStack;
 
 public class Triangle extends Drawable{
 

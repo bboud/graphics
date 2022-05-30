@@ -1,10 +1,7 @@
-package graphics;
+package main.java.graphics;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Vector;
 
 public class Camera {
 
