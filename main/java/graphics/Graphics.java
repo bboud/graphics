@@ -115,7 +115,7 @@ public class Graphics {
 				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 			}
 
-			mainCamera.HandleInput(key);
+			mainCamera.HandleInput(window);
 		});
 		
 		// Set the clear color
