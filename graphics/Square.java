@@ -10,8 +10,6 @@ import java.nio.FloatBuffer;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.GeometryUtils;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryStack;
 
 public class Square extends Drawable {

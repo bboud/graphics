@@ -52,18 +52,12 @@ public class Graphics {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
 		window = glfwCreateWindow(800, 600, "Graphics", NULL, NULL);
 		if ( window == NULL )
 			throw new RuntimeException("Failed to create the GLFW window");
-
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-		});
 
 		// Get the thread stack and push a new frame
 		try ( MemoryStack stack = stackPush() ) {
@@ -102,8 +96,28 @@ public class Graphics {
 		// bindings available for use.
 		GL.createCapabilities();
 		
-		//Triangle t = new Triangle();		
-		Cube c = new Cube();
+		//Triangle t = new Triangle();
+		Cube cubes[]= {
+			new Cube(new Vector3f(0.0f, 2.0f, -5.0f)),
+			new Cube(new Vector3f(-3.0f, 1.0f, -8.0f)),
+			new Cube(new Vector3f(0.0f, -3.0f, -5.0f)),
+			new Cube(new Vector3f(1.0f, 2.0f, -2.0f)),
+			new Cube(new Vector3f(-3.0f, 1.0f, -4.0f)),
+			new Cube(new Vector3f(3.0f, -1.0f, -4.0f)),
+			new Cube(new Vector3f(1.5f, -2.4f, -4.0f)),
+			new Cube(new Vector3f(0.0f, 0.0f, -1.0f))
+		};
+
+		Camera mainCamera = new Camera(new Vector3f(0.0f, 0.0f, -3.0f), new Vector3f(0.0f, 0.0f, 0.0f));
+
+		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
+				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+			}
+
+			mainCamera.HandleInput(key);
+		});
 		
 		// Set the clear color
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -114,8 +128,10 @@ public class Graphics {
 		while ( !glfwWindowShouldClose(window) ) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			c.Render();
-			c.Actor(window);
+			for(int i = 0; i < 8; i++) {
+				cubes[i].Render();
+				cubes[i].Actor(mainCamera);
+			}
 			
 			glfwSwapBuffers(window); // swap the color buffers
 
@@ -124,7 +140,9 @@ public class Graphics {
 			glfwPollEvents();
 		}
 		
-		c.Delete();
+		for(int i = 0; i < 5; i++) {
+			cubes[i].Delete();
+		}
 	}
 
 	public static void main(String[] args) {

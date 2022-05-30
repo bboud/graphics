@@ -4,20 +4,21 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Vector;
+
 public class Camera {
 
     //Camera Qualities
     private Vector3f position;
     //By default, the camera will always look at world origin.
     private Vector3f target = new Vector3f(0.0f, 0.0f, 0.0f);
-    private Vector3f direction;
 
 
     //Here we define some direction normals
-    private Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+    private Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
     private Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
-    private Vector3f cameraRight;
-    private Vector3f cameraUp;
+
+    private final float cameraSpeed = 0.3f;
 
 
     public Camera(Vector3f position) {
@@ -40,34 +41,30 @@ public class Camera {
         return position;
     }
 
+    public Vector3f GetCameraFront(){
+        return cameraFront;
+    }
+
+    public Vector3f GetCameraUp(){
+        return cameraUp;
+    }
+
+    public float GetCameraSpeed(){
+        return cameraSpeed;
+    }
+
+    private Vector3f vecDest = new Vector3f();
 	public void HandleInput(int key) {
-//		float cameraSpeed = 0.2f;
-//		if ( key == GLFW.GLFW_KEY_W  ) {
-//			position.add(cameraFront).mul(cameraSpeed, new Vector3f());
-//			System.out.println(position.toString());
-//		}else if (key == GLFW.GLFW_KEY_S ) {
-//			position.sub(cameraFront).mul(cameraSpeed, new Vector3f());
-//			System.out.println(position.toString());
-//		}
-	}
-
-	public Matrix4f Update() {
-        //We need to update these values as they always change!
-        //Note: Position should always change with the public function SetPos()
-        direction = position.sub(target).normalize();
-        cameraRight = direction.cross(up).normalize();
-        cameraUp = cameraRight.cross(direction).normalize();
-
-		//View
-		Matrix4f view = new Matrix4f();
-		//view.lookAt(position, position.add(cameraFront), cameraUp);
-        view.lookAt(target, target, target) ;
-
-		//Projection
-		Matrix4f projection = new Matrix4f();
-		projection.perspective(45.0f, 800.0f/600.0f, 0.1f, 100.0f);
-
-        //Projection and view space matrix
-        return projection.mul(view);
+        if ( key == GLFW.GLFW_KEY_W  ) {
+				position.add(cameraFront.mul(cameraSpeed,vecDest));
+			}else if (key == GLFW.GLFW_KEY_S ) {
+				position.sub(cameraFront.mul(cameraSpeed, vecDest));
+			}else if (key == GLFW.GLFW_KEY_A ) {
+				Vector3f cameraLeft = cameraUp.cross(cameraFront,vecDest).normalize();
+				position.add(cameraLeft.mul(cameraSpeed, vecDest));
+			}else if (key == GLFW.GLFW_KEY_D ) {
+				Vector3f cameraLeft = cameraFront.cross(cameraUp,vecDest).normalize();
+				position.add(cameraLeft.mul(cameraSpeed, vecDest));
+			}
 	}
 }
