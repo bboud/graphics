@@ -115,7 +115,7 @@ public class Graphics {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
 			c.Render();
-			c.Actor();
+			c.Actor(window);
 			
 			glfwSwapBuffers(window); // swap the color buffers
 

@@ -1,5 +1,7 @@
 package graphics;
 
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.stb.STBImage.*;
@@ -103,7 +105,7 @@ public class Cube extends Drawable {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
-		LoadTexture("resources/images/awesomeface.png", GL_RGBA);
+		LoadTexture("resources/images/harambe.png", GL_RGBA);
 		
 		shader.Use();
 		
@@ -171,16 +173,47 @@ public class Cube extends Drawable {
 	public int GetVAO() {
 		return VAO;
 	}
-	
+
+	//Camera Stuff
+	private Vector3f cameraPos = new Vector3f(0.0f, 0.0f, 3.0f);
+	private final Vector3f target = new Vector3f(0.0f, 0.0f, 0.0f);
+
+	private final Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+	private final Vector3f cameraFront = new Vector3f(0.0f, 0.0f,-1.0f);
+
+	private Vector3f vecDist = new Vector3f();
+
+	private final float cameraSpeed = 0.3f;
+
 	//Do some actions!
-	public void Actor() {
+	public void Actor(long window) {
+		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
+		glfwSetKeyCallback(window, (w, key, scancode, action, mods) -> {
+			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+				glfwSetWindowShouldClose(w, true); // We will detect this in the rendering loop
+
+			if ( key == GLFW.GLFW_KEY_W  ) {
+				cameraPos.add(cameraFront.mul(cameraSpeed,vecDist));
+			}else if (key == GLFW.GLFW_KEY_S ) {
+				cameraPos.sub(cameraFront.mul(cameraSpeed, vecDist));
+			}else if (key == GLFW.GLFW_KEY_A ) {
+				Vector3f cameraLeft = up.cross(cameraFront,vecDist).normalize();
+				cameraPos.add(cameraLeft.mul(cameraSpeed, vecDist));
+			}else if (key == GLFW.GLFW_KEY_D ) {
+				Vector3f cameraLeft = cameraFront.cross(up,vecDist).normalize();
+				cameraPos.add(cameraLeft.mul(cameraSpeed, vecDist));
+			}
+		});
+
 		//World
 		Matrix4f model = new Matrix4f();
+		model.translate(new Vector3f(0.0f, 0.0f, -3.0f));
 		model.rotate((float)GLFW.glfwGetTime(), new Vector3f(1.0f, 1.0f, 1.0f).normalize());
 		
 		//View
 		Matrix4f view = new Matrix4f();
-		view.translate(new Vector3f(0.0f, 0.0f, -3.0f));
+		//view.translate(new Vector3f(0.0f, 0.0f, -3.0f));
+		view.lookAt(cameraPos, cameraPos.add(cameraFront, vecDist), up);
 		
 		//Projection
 		Matrix4f projection = new Matrix4f();
