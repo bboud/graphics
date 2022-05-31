@@ -16,6 +16,8 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class Graphics {
 
+	private float deltaTime;
+
 	// The window handle
 	private long window;
 	
@@ -50,7 +52,7 @@ public class Graphics {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+		glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
@@ -115,8 +117,16 @@ public class Graphics {
 				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 			}
 
-			mainCamera.HandleInput(window);
+			mainCamera.keyboardCallback(window, key, scancode, action, mods, deltaTime);
 		});
+
+		GLFW.glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		GLFW.glfwSetCursorPosCallback(window, (w, xpos, ypos) -> {
+			mainCamera.mouseCallback(w, xpos, ypos, deltaTime);
+		});
+
+		float lastFrame = 0.0f;
+		float currentFrame;
 		
 		// Set the clear color
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -134,9 +144,12 @@ public class Graphics {
 			
 			glfwSwapBuffers(window); // swap the color buffers
 
+			currentFrame = (float)GLFW.glfwGetTime();
+			deltaTime = currentFrame - lastFrame;
 			// Poll for window events. The key callback above will only be
 			// invoked during this call.
 			glfwPollEvents();
+			lastFrame = (float)GLFW.glfwGetTime();
 		}
 		
 		for(int i = 0; i < 5; i++) {

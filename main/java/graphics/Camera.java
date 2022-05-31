@@ -17,13 +17,11 @@ public class Camera {
     private Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
 
     private final Vector3f vecDest = new Vector3f();
-    private float deltaTime = 0.0f;
-    private float lastTime = 0.0f;
 
     private boolean firstMouse = true;
     private double lastX, lastY;
 
-    private final float sensitivity = 0.05f;
+    private final float sensitivity = 0.2f;
 
     private double yaw, pitch = 0.0d;
 
@@ -59,25 +57,11 @@ public class Camera {
         return cameraUp;
     }
 
+    public void keyboardCallback(long window, int key, int scancode, int action, int mods, float deltaTime) {
+        System.out.println(deltaTime);
 
-    public void HandleInput(long window) {
-        float sensitivity = 0.1f;
+        float cameraSpeed = 20.0f * deltaTime;
 
-        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-        GLFW.glfwSetCursorPosCallback(window, this::mouseCallback);
-
-        GLFW.glfwSetKeyCallback(window, this::keyboardCallback);
-    }
-
-    private void keyboardCallback(long window, int key, int scancode, int action, int mods) {
-
-        float curTime = (float) GLFW.glfwGetTime();
-        deltaTime = curTime - lastTime;
-        lastTime = curTime;
-
-        float cameraSpeed = 1.2f * deltaTime;
-
-        cameraSpeed = 1.2f * deltaTime;
         if (key == GLFW.GLFW_KEY_W) {
             position.add(cameraFront.mul(cameraSpeed, vecDest));
         } else if (key == GLFW.GLFW_KEY_S) {
@@ -86,12 +70,12 @@ public class Camera {
             Vector3f cameraLeft = cameraUp.cross(cameraFront, vecDest).normalize();
             position.add(cameraLeft.mul(cameraSpeed, vecDest));
         } else if (key == GLFW.GLFW_KEY_D) {
-            Vector3f cameraLeft = cameraFront.cross(cameraUp, vecDest).normalize();
-            position.add(cameraLeft.mul(cameraSpeed, vecDest));
+            Vector3f cameraRight = cameraFront.cross(cameraUp, vecDest).normalize();
+            position.add(cameraRight.mul(cameraSpeed, vecDest));
         }
     }
 
-    private void mouseCallback(long window, double xpos, double ypos) {
+    public void mouseCallback(long window, double xpos, double ypos, float deltaTime) {
         if (firstMouse) {
             lastX = xpos;
             lastY = ypos;
@@ -114,7 +98,7 @@ public class Camera {
         if (pitch < -89.0f)
             pitch = -89.0f;
 
-        direction.set((float) Math.cos(yaw) * Math.cos(pitch), (float) Math.sin(pitch), (float) Math.sin(yaw) * Math.cos(pitch));
+        direction.set((float) Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)), (float) Math.sin(Math.toRadians(pitch)), (float) Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
         cameraFront = direction.normalize();
     }
 }
