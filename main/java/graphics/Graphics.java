@@ -7,6 +7,8 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
 import java.nio.*;
+import java.util.Random;
+import java.util.Vector;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -96,18 +98,6 @@ public class Graphics {
 		// creates the GLCapabilities instance and makes the OpenGL
 		// bindings available for use.
 		GL.createCapabilities();
-		
-		//Triangle t = new Triangle();
-		Cube cubes[]= {
-			new Cube(new Vector3f(0.0f, 2.0f, -5.0f)),
-			new Cube(new Vector3f(-3.0f, 1.0f, -8.0f)),
-			new Cube(new Vector3f(0.0f, -3.0f, -5.0f)),
-			new Cube(new Vector3f(1.0f, 2.0f, -2.0f)),
-			new Cube(new Vector3f(-3.0f, 1.0f, -4.0f)),
-			new Cube(new Vector3f(3.0f, -1.0f, -4.0f)),
-			new Cube(new Vector3f(1.5f, -2.4f, -4.0f)),
-			new Cube(new Vector3f(0.0f, 0.0f, -1.0f))
-		};
 
 		Camera mainCamera = new Camera(new Vector3f(0.0f, 0.0f, -3.0f), new Vector3f(0.0f, 0.0f, 0.0f));
 
@@ -130,14 +120,25 @@ public class Graphics {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glEnable(GL_DEPTH_TEST);
 
+		Vector<Cube> cubes = new Vector<Cube>();
+
+		float min = -15.0f;
+		float max = 15.0f;
+
+		for(int i = 0; i < 250; i++){
+			Random r = new Random();
+			cubes.addElement(new Cube(new Vector3f( r.nextFloat(min, max), r.nextFloat(min, max), r.nextFloat(min, max) )));
+		}
+
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
 		while ( !glfwWindowShouldClose(window) ) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			for(int i = 0; i < 8; i++) {
-				cubes[i].Render();
-				cubes[i].Actor(mainCamera);
+			for (Cube c :
+					cubes) {
+				c.Render();
+				c.Actor(mainCamera);
 			}
 			
 			glfwSwapBuffers(window); // swap the color buffers
@@ -151,9 +152,9 @@ public class Graphics {
 			glfwPollEvents();
 			lastFrame = (float)GLFW.glfwGetTime();
 		}
-		
-		for(int i = 0; i < 5; i++) {
-			cubes[i].Delete();
+		for (Cube c :
+				cubes) {
+			c.Delete();
 		}
 	}
 

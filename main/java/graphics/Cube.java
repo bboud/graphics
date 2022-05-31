@@ -6,6 +6,7 @@ import static org.lwjgl.stb.STBImage.*;
 
 import java.nio.IntBuffer;
 import java.nio.ByteBuffer;
+import java.util.Random;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -142,6 +143,11 @@ public class Cube extends Drawable {
 	public Cube(Vector3f position) {
 
 		this.position = position;
+		model.translate(position);
+
+		Random r = new Random();
+		System.out.println(r.nextFloat((float)Math.PI*2.0f));
+		model.rotate(r.nextFloat((float)Math.PI * 2.0f), new Vector3f(1.0f, 1.0f, 1.0f).normalize());
 		
 		glDeleteBuffers(EBO);
 		
@@ -188,13 +194,9 @@ public class Cube extends Drawable {
 
 	private Matrix4f matDest = new Matrix4f();
 	private Vector3f vecDest = new Vector3f();
-	public void Actor(Camera camera) {
-		model.translate(position);
-		//World
-		Matrix4f model = new Matrix4f();
-		model.translate(position);
-		model.rotate((float)GLFW.glfwGetTime(), new Vector3f(1.0f, 1.0f, 1.0f).normalize());
 
+	private boolean init = true;
+	public void Actor(Camera camera) {
 		//View
 		Matrix4f view = new Matrix4f();
 		//view.translate(new Vector3f(0.0f, 0.0f, -3.0f));
