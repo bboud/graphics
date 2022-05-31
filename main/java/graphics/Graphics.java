@@ -116,11 +116,9 @@ public class Graphics {
 			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
 				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 			}
-
-			mainCamera.keyboardCallback(window, key, scancode, action, mods, deltaTime);
 		});
 
-		GLFW.glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		GLFW.glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		GLFW.glfwSetCursorPosCallback(window, (w, xpos, ypos) -> {
 			mainCamera.mouseCallback(w, xpos, ypos, deltaTime);
 		});
@@ -146,6 +144,8 @@ public class Graphics {
 
 			currentFrame = (float)GLFW.glfwGetTime();
 			deltaTime = currentFrame - lastFrame;
+
+			mainCamera.keyboard(window, deltaTime);
 			// Poll for window events. The key callback above will only be
 			// invoked during this call.
 			glfwPollEvents();
@@ -160,5 +160,4 @@ public class Graphics {
 	public static void main(String[] args) {
 		new Graphics().run();
 	}
-
 }

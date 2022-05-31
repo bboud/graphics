@@ -57,21 +57,29 @@ public class Camera {
         return cameraUp;
     }
 
-    public void keyboardCallback(long window, int key, int scancode, int action, int mods, float deltaTime) {
-        System.out.println(deltaTime);
-
+    public void keyboard(long window, float deltaTime) {
         float cameraSpeed = 20.0f * deltaTime;
 
-        if (key == GLFW.GLFW_KEY_W) {
+        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS){
             position.add(cameraFront.mul(cameraSpeed, vecDest));
-        } else if (key == GLFW.GLFW_KEY_S) {
+        }
+
+        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS){
             position.sub(cameraFront.mul(cameraSpeed, vecDest));
-        } else if (key == GLFW.GLFW_KEY_A) {
+        }
+
+        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS){
             Vector3f cameraLeft = cameraUp.cross(cameraFront, vecDest).normalize();
             position.add(cameraLeft.mul(cameraSpeed, vecDest));
-        } else if (key == GLFW.GLFW_KEY_D) {
+        }
+
+        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS){
             Vector3f cameraRight = cameraFront.cross(cameraUp, vecDest).normalize();
             position.add(cameraRight.mul(cameraSpeed, vecDest));
+        }
+
+        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_SPACE) == GLFW.GLFW_PRESS){
+            position.add(cameraUp.mul(cameraSpeed, vecDest));
         }
     }
 
